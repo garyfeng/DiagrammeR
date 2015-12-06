@@ -10,6 +10,10 @@
 #' @param display_labels display node labels.
 #' @param set_seed supplying a value sets a random seed of the
 #'\code{Mersenne-Twister} implementation.
+#' @param node_id an optional vector of unique node ID values to apply to the
+#' randomized graph. The length of the vector should ideally correspond to
+#' the value supplied in \code{n}; vectors longer than the length of \code{n}
+#' will be truncated.
 #' @examples
 #' \dontrun{
 #' # Create a random, directed graph with 50 nodes and 75 edges
@@ -23,6 +27,12 @@
 #' # Create a directed graph with a seed set so that it's reproducible
 #' directed_graph <-
 #'   create_random_graph(15, 34, set_seed = 50)
+#'
+#' # Create a directed, random graph with a supplied set of node IDs
+#' random_directed_graph_letters <-
+#'   create_random_graph(n = 10, m = 20,
+#'                       directed = TRUE,
+#'                       node_id = LETTERS)
 #' }
 #' @export create_random_graph
 
@@ -31,7 +41,8 @@ create_random_graph <- function(n,
                                 directed = FALSE,
                                 fully_connected = FALSE,
                                 display_labels = TRUE,
-                                set_seed = NULL){
+                                set_seed = NULL,
+                                node_id = NULL){
 
   if (!is.null(set_seed)) set.seed(set_seed, kind = "Mersenne-Twister")
 
@@ -43,14 +54,37 @@ create_random_graph <- function(n,
                 ")"))
   }
 
-  graph <-
-    create_graph(nodes_df =
-                   create_nodes(nodes = 1:n,
-                                label = ifelse(display_labels == TRUE,
-                                               TRUE, FALSE),
-                                value = sample(seq(0.5, 10, 0.5),
-                                               n, replace = TRUE)),
-                 directed = ifelse(directed == TRUE, TRUE, FALSE))
+  if (!is.null(node_id)){
+
+    # Stop function if all node ID values are not unique
+    if (anyDuplicated(node_id) != 0){
+      stop("The supplied node IDs are not unique.")
+    }
+
+    # Stop function if insufficient node IDs values provided
+    if (length(node_id) < n){
+      stop("Not enough node ID values were provided.")
+    }
+
+    graph <-
+      create_graph(nodes_df =
+                     create_nodes(nodes = node_id[1:n],
+                                  label = ifelse(display_labels == TRUE,
+                                                 TRUE, FALSE),
+                                  value = sample(seq(0.5, 10, 0.5),
+                                                 n, replace = TRUE)),
+                   directed = ifelse(directed == TRUE, TRUE, FALSE))
+  } else {
+
+    graph <-
+      create_graph(nodes_df =
+                     create_nodes(nodes = 1:n,
+                                  label = ifelse(display_labels == TRUE,
+                                                 TRUE, FALSE),
+                                  value = sample(seq(0.5, 10, 0.5),
+                                                 n, replace = TRUE)),
+                   directed = ifelse(directed == TRUE, TRUE, FALSE))
+  }
 
   if (m > 0){
     for (i in 1:m){
@@ -61,9 +95,11 @@ create_random_graph <- function(n,
 
         edge_placed <- FALSE
 
-        node_a <- sample(seq(1, n, 1), 1)
+        node_a <-
+          sample(get_nodes(graph), 1)
 
-        node_b <- sample(seq(1, n, 1)[-which(1:n %in% node_a)], 1)
+        node_b <-
+          sample(get_nodes(graph)[-which(get_nodes(graph) %in% node_a)], 1)
 
         edge_in_graph <-
           edge_present(graph,
@@ -74,9 +110,9 @@ create_random_graph <- function(n,
                        to = node_a)
 
         if (edge_in_graph == FALSE){
-          graph <- add_edges(graph,
-                             from = node_a,
-                             to = node_b)
+          graph <- add_edge(graph,
+                            from = node_a,
+                            to = node_b)
 
           edge_placed <- TRUE
         }
@@ -97,9 +133,9 @@ create_random_graph <- function(n,
           setdiff(get_nodes(graph), unconnected_nodes)
 
         graph <-
-          add_edges(graph,
-                    from = sample(unconnected_nodes, 1),
-                    to = sample(connected_nodes, 1))
+          add_edge(graph,
+                   from = sample(unconnected_nodes, 1),
+                   to = sample(connected_nodes, 1))
       } else { break }
     }
   }
