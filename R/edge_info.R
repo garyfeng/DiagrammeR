@@ -79,10 +79,28 @@ edge_info <- function(graph){
       edge_properties[i, 2] <- edge_to[i]
 
       edge_properties[i, 3] <-
-        ifelse(exists("rel"),
-               rel[which((edge_from %in% edge_from[i]) &
-                           (edge_to %in% edge_to[i]))],
-               rep(NA, length(edge_from)))
+# garyfeng: fixing a conflict with ggplot2, where "rel" is a function.
+# exists("rel") is unsafe as "rel" may have been defined elsewhere.
+#         if (!exists("rel")) {
+#           # if "rel" is defined neither in this scope or globally
+#           rep(NA, length(edge_from))
+#         } else if (is.function(rel)) {
+#           # if "rel" is a function, e.g., if ggplot2 is loaded
+#           rep(NA, length(edge_from))
+#         } else {
+#           # rel is defined above; should tetst more thoroughly
+#           rel[which((edge_from %in% edge_from[i]) &
+#                       (edge_to %in% edge_to[i]))]
+#         }
+#         ifelse(exists("rel")
+#                rel[which((edge_from %in% edge_from[i]) &
+#                            (edge_to %in% edge_to[i]))],
+#                rep(NA, length(edge_from)))
+          ifelse( "rel" %in% colnames(graph$edges_df),
+                 rel[which((edge_from %in% edge_from[i]) &
+                             (edge_to %in% edge_to[i]))],
+                 rep(NA, length(edge_from)))
+
     }
 
     return(edge_properties)
