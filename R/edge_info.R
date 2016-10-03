@@ -5,70 +5,74 @@
 #' @return a data frame containing information specific to each edge within
 #' the graph.
 #' @examples
-#' \dontrun{
-#' # Create a simple graph and get edge information from it
+#' # Set a seed
+#' set.seed(24)
+#'
+#' # Create a node data frame (ndf)
 #' nodes <-
-#'   create_nodes(nodes = LETTERS,
-#'                label = TRUE,
-#'                type = c(rep("a_to_g", 7),
-#'                         rep("h_to_p", 9),
-#'                         rep("q_to_x", 8),
-#'                         rep("y_and_z",2)))
+#'   create_node_df(
+#'     n = 26,
+#'     label = TRUE,
+#'     type = c(rep("a", 7),
+#'              rep("b", 9),
+#'              rep("c", 8),
+#'              rep("d", 2)))
 #'
+#' # Create an edge data frame (edf)
 #' edges <-
-#'   create_edges(from = sample(LETTERS, replace = TRUE),
-#'                to = sample(LETTERS, replace = TRUE),
-#'                rel = "letter_to_letter")
+#'   create_edge_df(
+#'     from = sample(1:26, replace = TRUE),
+#'     to = sample(1:26, replace = TRUE),
+#'     rel = c(rep("rel_a", 7),
+#'             rep("rel_b", 9),
+#'             rep("rel_c", 8),
+#'             rep("rel_d", 2)))
 #'
+#' # Create a graph using the ndf and edf
 #' graph <-
-#'   create_graph(nodes_df = nodes,
-#'                edges_df = edges,
-#'                graph_attrs = "layout = neato",
-#'                node_attrs = c("fontname = Helvetica",
-#'                               "shape = circle"))
+#'   create_graph(
+#'     nodes_df = nodes,
+#'     edges_df = edges)
 #'
+#' # Get a data frame with information about
+#' # the graph's edges
 #' edge_info(graph)
-#' #>    from   to              rel
-#' #> 1     A    Z letter_to_letter
-#' #> 2     H    U letter_to_letter
-#' #> 3     W    O letter_to_letter
-#' #> 4     U    K letter_to_letter
-#' #> 5     I    V letter_to_letter
-#' #>..   ...  ...              ...
-#' }
+#' #>    from to   rel
+#' #> 1     8  2 rel_a
+#' #> 2     6 16 rel_a
+#' #> 3    19 17 rel_a
+#' #> 4    14  2 rel_a
+#' #> 5    18  9 rel_a
+#' #>..   ... ..   ...
 #' @export edge_info
 
-edge_info <- function(graph){
+edge_info <- function(graph) {
 
-  if ("from" %in% colnames(graph$edges_df)){
+  if ("from" %in% colnames(graph$edges_df)) {
     edge_from <- graph$edges_df$from
   }
 
-  if ("to" %in% colnames(graph$edges_df)){
+  if ("to" %in% colnames(graph$edges_df)) {
     edge_to <- graph$edges_df$to
   }
 
-  if ("rel" %in% colnames(graph$edges_df)){
+  if ("rel" %in% colnames(graph$edges_df)) {
     relationship <- graph$edges_df$rel
   }
 
-  # For graphs with no edges, create an 'edge_properties' data frame
-  # that doesn't need to consider any edge information
-  if (is.null(graph$edges_df)){
-
-    edge_properties <- as.data.frame(mat.or.vec(nr = 0, nc = 3))
-    colnames(edge_properties) <- c("from", "to", "rel")
-
-    return(edge_properties)
+  # For graphs with no edges, return NULL
+  if (is.null(graph$edges_df)) {
+    return(NULL)
   }
 
-  # For graphs with no edges, create an 'edge_properties' data frame
-  if (!is.null(graph$edges_df)){
+  # For graphs with no edges, create an
+  # `edge_properties` data frame
+  if (!is.null(graph$edges_df)) {
 
     # Create data frame of edge properties
-    for (i in 1:length(edge_from)){
+    for (i in 1:length(edge_from)) {
 
-      if (i == 1){
+      if (i == 1) {
         edge_properties <- as.data.frame(mat.or.vec(nr = 0, nc = 3))
         colnames(edge_properties) <- c("from", "to", "rel")
       }

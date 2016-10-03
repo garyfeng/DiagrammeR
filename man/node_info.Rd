@@ -7,60 +7,57 @@
 node_info(graph)
 }
 \arguments{
-\item{graph}{a graph object of class \code{dgr_graph}.}
+\item{graph}{a graph object of class
+\code{dgr_graph}.}
 }
 \value{
-a data frame containing information specific to each node within
-the graph.
+a data frame containing information specific
+to each node within the graph.
 }
 \description{
-Obtain a data frame with detailed information on nodes and
-their interrelationships within a graph.
+Obtain a data frame with detailed
+information on nodes and their interrelationships
+within a graph.
 }
 \examples{
-\dontrun{
-# Create a simple graph and get node information from it
+# Set a seed
+set.seed(24)
+
+# Create a node data frame (ndf)
 nodes <-
-  create_nodes(nodes = LETTERS,
-               label = TRUE,
-               type = c(rep("a_to_g", 7),
-                        rep("h_to_p", 9),
-                        rep("q_to_x", 8),
-                        rep("y_and_z",2)))
+  create_node_df(
+    n = 26,
+    label = TRUE,
+    type = c(rep("a", 7),
+             rep("b", 9),
+             rep("c", 8),
+             rep("d", 2)))
 
+# Create an edge data frame (edf)
 edges <-
-  create_edges(from = sample(LETTERS, replace = TRUE),
-               to = sample(LETTERS, replace = TRUE),
-               label = "edge",
-               rel = "letter_to_letter")
+  create_edge_df(
+    from = sample(1:26, replace = TRUE),
+    to = sample(1:26, replace = TRUE),
+    rel = c(rep("rel_a", 7),
+            rep("rel_b", 9),
+            rep("rel_c", 8),
+            rep("rel_d", 2)))
 
+# Create a graph using the ndf and edf
 graph <-
-  create_graph(nodes_df = nodes,
-               edges_df = edges,
-               graph_attrs = "layout = neato",
-               node_attrs = c("fontname = Helvetica",
-                              "shape = circle"))
+  create_graph(
+    nodes_df = nodes,
+    edges_df = edges)
 
+# Get information on the graph's nodes
 node_info(graph)
-#>    node label    type degree indegree outdegree loops
-#> 1     A     A  a_to_g      2        0         2     0
-#> 2     W     W  q_to_x      1        0         1     0
-#> 3     T     T  q_to_x      2        0         2     0
-#> 4     L     L  h_to_p      1        0         1     0
-#> 5     F     F  a_to_g      0        0         0     0
-#>..   ...   ...     ...    ...      ...       ...   ...
-
-# Import a large graph
-power_grid <-
-import_graph(system.file("examples/power_grid.graphml",
-                         package = "DiagrammeR"))
-
-# Use dplyr::filter to determine which nodes are highly
-# connected in this graph
-library(dplyr)
-
-high_connect_nodes <-
-  filter(node_info(power_grid), degree > 10)$node
-}
+#>    id type label deg indeg outdeg loops
+#> 1   1    a     1   0     0      0     0
+#> 2   2    a     2   5     4      1     0
+#> 3   3    a     3   1     0      1     0
+#> 4   4    a     4   3     1      2     0
+#> 5   5    a     5   0     0      0     0
+#> 6   6    a     6   5     2      3     0
+#>.. ...  ...   ... ...   ...    ...   ...
 }
 

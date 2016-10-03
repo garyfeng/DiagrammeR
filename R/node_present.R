@@ -1,66 +1,77 @@
-#' Determine whether a specified node is present in an existing graph object
-#' @description From a graph object of class \code{dgr_graph}, determine
-#' whether a specified node is present.
-#' @param graph a graph object of class \code{dgr_graph} that is created
-#' using \code{create_graph}.
-#' @param node a value that may or may not match a node ID in the graph.
+#' Determine whether a specified node is present in an
+#' existing graph object
+#' @description From a graph object of class
+#' \code{dgr_graph}, determine whether a specified node
+#' is present.
+#' @param graph a graph object of class
+#' \code{dgr_graph} that is created using
+#' \code{create_graph}.
+#' @param node a value that may or may not match a node
+#' ID in the graph.
 #' @return a logical value.
 #' @examples
-#' \dontrun{
-#' # Before finding out whether a particular node is present,
-#' # create a simple graph
+#' # Set a seed
+#' set.seed(24)
+#'
+#' # Create a node data frame (ndf)
 #' nodes <-
-#'   create_nodes(nodes = LETTERS,
-#'                label = TRUE,
-#'                type = c(rep("a_to_g", 7),
-#'                         rep("h_to_p", 9),
-#'                         rep("q_to_x", 8),
-#'                         rep("y_and_z",2)))
+#'   create_node_df(
+#'     n = 26,
+#'     label = TRUE,
+#'     type = c(rep("a", 7),
+#'              rep("b", 9),
+#'              rep("c", 8),
+#'              rep("d", 2)))
 #'
+#' # Create an edge data frame (edf)
 #' edges <-
-#'   create_edges(from = sample(LETTERS, replace = TRUE),
-#'                to = sample(LETTERS, replace = TRUE),
-#'                label = "edge",
-#'                rel = "letter_to_letter")
+#'   create_edge_df(
+#'     from = sample(1:26, replace = TRUE),
+#'     to = sample(1:26, replace = TRUE),
+#'     rel = c(rep("rel_a", 7),
+#'             rep("rel_b", 9),
+#'             rep("rel_c", 8),
+#'             rep("rel_d", 2)))
 #'
+#' # Create a graph using the ndf and edf
 #' graph <-
-#'   create_graph(nodes_df = nodes,
-#'                edges_df = edges,
-#'                graph_attrs = "layout = neato",
-#'                node_attrs = c("fontname = Helvetica",
-#'                               "shape = circle"))
+#'   create_graph(
+#'     nodes_df = nodes,
+#'     edges_df = edges)
 #'
-#' # Verify that node with ID 'a' is not in graph
-#' node_present(graph, "a")
+#' # Verify that node with ID `34` is not in graph
+#' node_present(graph, 34)
 #' #> FALSE
 #'
-#' # Is node with ID 'A' in the graph?
-#' node_present(graph, "A")
+#' # Is node with ID 5 in the graph?
+#' node_present(graph, 5)
 #' #> TRUE
 #'
-#' # Are all node ID values from the LETTERS vector
-#' in the graph?
-#' all(sapply(LETTERS, function(x) node_present(graph, x)))
+#' # Are all node ID values from `1` to `26`
+#' # in the graph?
+#' all(sapply(1:26,
+#'       function(x) node_present(graph, x)))
 #' #> TRUE
-#' }
 #' @export node_present
 
 node_present <- function(graph,
-                         node){
+                         node) {
 
-  # Verify that 'node' is given as a single value
-  node_is_single_value <- ifelse(length(node) == 1, TRUE, FALSE)
+  # Verify that `node` is given as a single value
+  node_is_single_value <-
+    ifelse(length(node) == 1, TRUE, FALSE)
 
   # Stop function if node not a single value
-  if (node_is_single_value == FALSE){
-
+  if (node_is_single_value == FALSE) {
     stop("Only a single node can be queried using 'node_present'")
   }
 
-  # Determine whether the value corresponds to a node ID in the graph
-  if (node_is_single_value == TRUE){
+  # Determine whether the value corresponds to a
+  # node ID in the graph
+  if (node_is_single_value) {
 
-    node_is_present <- ifelse(node %in% get_nodes(graph), TRUE, FALSE)
+    node_is_present <-
+      ifelse(node %in% get_node_ids(graph), TRUE, FALSE)
 
     return(node_is_present)
   }

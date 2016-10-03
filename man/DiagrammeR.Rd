@@ -67,7 +67,7 @@ DiagrammeR("graph LR;A(Rounded)-->B[Squared];B-->C{A Decision};
 data(mtcars)
 connections <- sapply(
  1:ncol(mtcars)
-  ,function(i){
+  ,function(i) {
      paste0(
         i
       ,"(",colnames(mtcars)[i],")---"
@@ -131,6 +131,5 @@ sequenceDiagram;
    end
 ")
 }
-
 }
 

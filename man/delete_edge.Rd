@@ -7,35 +7,45 @@
 delete_edge(graph, from, to)
 }
 \arguments{
-\item{graph}{a graph object of class \code{dgr_graph} that is created using
+\item{graph}{a graph object of class
+\code{dgr_graph} that is created using
 \code{create_graph}.}
 
-\item{from}{a node ID from which the edge to be removed is outgoing.}
+\item{from}{a node ID from which the edge to be
+removed is outgoing.}
 
-\item{to}{a node ID to which the edge to be removed is incoming.}
+\item{to}{a node ID to which the edge to be removed
+is incoming.}
 }
 \value{
 a graph object of class \code{dgr_graph}.
 }
 \description{
-From a graph object of class \code{dgr_graph}, delete an
-existing edge by specifying a pair of node IDs corresponding to the edge
-direction.
+From a graph object of class
+\code{dgr_graph}, delete an existing edge by
+specifying a pair of node IDs corresponding to the
+edge direction.
 }
 \examples{
-\dontrun{
 # Create an empty graph
 graph <- create_graph()
 
 # Add two nodes
-graph <- add_node(graph, node = "a")
-graph <- add_node(graph, node = "b")
+graph <- add_node(graph)
+graph <- add_node(graph)
 
 # Add an edge
-graph <- add_edge(graph, from = "a", to = "b")
+graph <-
+  add_edge(
+    graph = graph,
+    from = 1,
+    to = 2)
 
 # Delete the edge
-graph <- delete_edge(graph, from = "a", to = "b")
-}
+graph <-
+  delete_edge(
+    graph = graph,
+    from = 1,
+    to = 2)
 }
 
